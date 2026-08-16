@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treasure Hunt Quiz</title>
+<style>
+:root{--ink:#202020;--paper:#f7f5ef;--gold:#f4bb36;--muted:#666;--green:#2f7d32;--red:#b33a3a}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Arial,sans-serif;color:var(--paper);background:#202020;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:28px 28px}
+button{font:inherit;cursor:pointer}
+.app{width:min(100% - 32px,900px);margin:auto;padding:32px 0}
+header{display:flex;gap:16px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:24px}
+.compass{width:46px;height:46px;display:grid;place-items:center;border:1px solid rgba(244,187,54,.55);border-radius:50%;color:var(--gold);font-size:24px;flex:none}
+.eyebrow{letter-spacing:.12em;text-transform:uppercase;font-size:.72rem}
+h1{margin:0;font-size:clamp(1.8rem,5vw,3rem)}
+header p{margin:8px 0 0;color:#d7d4cc;line-height:1.5}
+.progress{margin:28px 0;padding:16px 20px;border:1px solid rgba(255,255,255,.15);border-radius:16px;background:rgba(0,0,0,.15)}
+.progress-row{display:flex;justify-content:space-between;margin-bottom:10px}
+.track{height:7px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden}
+.fill{height:100%;width:0;background:var(--gold);transition:width .3s}
+.score-row{display:flex;justify-content:space-between;margin-top:10px;color:#ddd}
+.card{min-height:480px;background:var(--paper);color:var(--ink);border-radius:24px;padding:clamp(24px,5vw,48px);box-shadow:0 22px 50px rgba(0,0,0,.24);display:flex;flex-direction:column;justify-content:space-between}
+.tag{display:inline-block;padding:6px 12px;border-radius:999px;background:#e5dfd2;color:#575757;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+.question{margin:28px 0 0;font-size:clamp(1.5rem,4vw,2.5rem);line-height:1.15}
+.clue{margin-top:16px;color:#666;font-style:italic;line-height:1.5}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+.option{min-height:78px;border:2px solid #d5d0c5;border-radius:14px;background:#fff;color:#202020;padding:15px;text-align:left;font-weight:700;transition:transform .15s,border-color .15s,background .15s}
+.option:hover:not(:disabled){transform:translateY(-2px);border-color:#999}
+.option.correct{background:#e7f3e7;border-color:var(--green)}
+.option.wrong{background:#f8e6e6;border-color:var(--red)}
+.option:disabled{cursor:default}
+.option-label{display:block;font-size:.75rem;color:#777;margin-bottom:6px}
+.feedback{margin-top:20px;padding:14px;border-radius:12px;line-height:1.5;font-weight:700}
+.feedback.correct{background:#e7f3e7;color:#245c27}
+.feedback.wrong{background:#f8e6e6;color:#7b2525}
+.explanation{margin-top:14px;color:#4b4b4b;line-height:1.65;white-space:pre-line}
+.source{margin-top:14px;color:#777;font-size:.85rem}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:28px}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;background:#202020;color:#fff}
+.btn.gold{background:var(--gold);color:#202020}
+.controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
+.controls .btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff}
+.status{color:#d7d4cc}
+.center{min-height:480px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.trophy{font-size:52px;margin-bottom:12px}
+.final-score{font-size:2.2rem;font-weight:800}
+.error{padding:18px;border:1px solid #d77;background:#3a2020;border-radius:14px;line-height:1.5}
+.config{margin-top:18px;padding:14px 16px;border:1px dashed rgba(255,255,255,.25);border-radius:12px;color:#ccc;font-size:.9rem;line-height:1.5}
+code{color:#fff}
+[hidden]{display:none!important}
+@media(max-width:640px){.options{grid-template-columns:1fr}.app{width:min(100% - 20px,900px);padding:20px 0}.card{min-height:520px;border-radius:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="compass">✦</div>
+  <div>
+    <div class="eyebrow">Treasure Hunt</div>
+    <h1>Quiz Challenge</h1>
+    <p>Test your knowledge, solve the clues, and score as many points as possible.</p>
+  </div>
+</header>
+
+<section class="progress">
+  <div class="progress-row"><span>Progress</span><strong id="progressCount">0 / 0</strong></div>
+  <div class="track"><div id="progressFill" class="fill"></div></div>
+  <div class="score-row"><span>Score</span><strong id="score">0</strong></div>
+</section>
+
+<main>
+  <div id="loading" class="card center">
+    <div>Loading question bank…</div>
+  </div>
+
+  <div id="error" class="error" hidden></div>
+
+  <div id="empty" class="card center" hidden>
+    <div style="font-size:52px">🗺️</div>
+    <h2>No questions found</h2>
+    <p>Check your Google Sheets CSV URL and column names.</p>
+  </div>
+
+  <article id="questionCard" class="card" hidden>
+    <div>
+      <span id="category" class="tag">Question</span>
+      <h2 id="question" class="question"></h2>
+      <p id="clue" class="clue" hidden></p>
+
+      <div id="options" class="options"></div>
+
+      <div id="feedback" class="feedback" hidden></div>
+      <div id="explanation" class="explanation" hidden></div>
+      <div id="source" class="source" hidden></div>
+    </div>
+
+    <div class="actions">
+      <button id="next" class="btn gold" hidden>Next →</button>
+    </div>
+  </article>
+
+  <div id="complete" class="card center" hidden>
+    <div class="trophy">🏆</div>
+    <h2>Treasure Hunt Complete!</h2>
+    <div id="finalScore" class="final-score"></div>
+    <p id="finalMessage"></p>
+    <button id="completeRestart" class="btn gold">Play Again</button>
+  </div>
+</main>
+
+<div class="controls">
+  <div class="status" id="status">Preparing question bank…</div>
+  <div style="display:flex;gap:8px">
+    <button id="shuffle" class="btn">↗ Shuffle</button>
+    <button id="restart" class="btn">↻ Restart</button>
+  </div>
+</div>
+
+<div class="config">
+  <strong>Question bank:</strong> Google Sheets CSV.
+  Expected columns:
+  <code>No, Question, A, B, C, D, Answer, Clue, Explanation, Source</code>.
+  The game uses the exact A/B/C/D choices from the sheet and randomizes their display positions.
+</div>
+</div>
+
+<script>
+/*
+  YOUR PUBLISHED GOOGLE SHEET
+  The sheet is public/read-only through this CSV endpoint.
+*/
+const GOOGLE_SHEET_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5pyFbxrbzTpAcFyStBf29mZxLayBSl2izWxwzEmqIw2OYGg49Sm2HBors6dczcRvKfOz6PT2Y8qxX/pub?gid=0&single=true&output=csv";
+
+
+/*
+  If the Google Sheet cannot be reached, the app can use these
+  demo records so the interface remains testable.
+*/
+const DEMO_DATA = [
+  {no:"1",question:"Jalan sempit orang kaya",A:"Merchant's Lane",B:"Restoran Subway",C:"Restoran Papparich",D:"Burger King",answer:"A",clue:"Language",explanation:"Jalan sempit = Lane, Orang kaya = Merchant",source:"Trailblazer"},
+  {no:"2",question:"Jika anda ingin mendapatkan perkhidmatan di sini, dari belakang anda kena senyap.",A:"MAID SERVICE",B:"Merchant's Lane",C:"Hush Puppies",D:"Yusoff Tomyam",answer:"A",clue:"Language",explanation:"senyap = DIAM\\n\\ndari belakang: to read from the right\\n\\nDIAM → MAID\\nperkhidmatan = SERVICE\\n\\nMAID + SERVICE = MAID SERVICE",source:"Malaysian Hunt Club"},
+  {no:"3",question:"Give a good mix to this aimless clue.",A:"MELISSA",B:"MAID SERVICE",C:"Merchant's Lane",D:"Beryls",answer:"A",clue:"Anagram question",explanation:"mix: Anagram indicator\\n\\naimless = MELISSA",source:"Malaysian Hunt Club"}
+];
+
+const state = {
+  records: [],
+  order: [],
+  position: 0,
+  score: 0,
+  answered: false,
+  completed: false
+};
+
+const $ = id => document.getElementById(id);
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cell = "", quoted = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], next = text[i + 1];
+
+    if (ch === '"' && quoted && next === '"') {
+      cell += '"'; i++;
+    } else if (ch === '"') {
+      quoted = !quoted;
+    } else if (ch === ',' && !quoted) {
+      row.push(cell); cell = "";
+    } else if ((ch === '\n' || ch === '\r') && !quoted) {
+      if (ch === '\r' && next === '\n') i++;
+      row.push(cell); cell = "";
+      if (row.some(v => v.trim() !== "")) rows.push(row);
+      row = [];
+    } else {
+      cell += ch;
+    }
+  }
+
+  if (cell !== "" || row.length) {
+    row.push(cell);
+    if (row.some(v => v.trim() !== "")) rows.push(row);
+  }
+
+  if (!rows.length) return [];
+
+  const headers = rows[0].map(h => h.trim().toLowerCase());
+  const find = (...names) => {
+    for (const name of names) {
+      const i = headers.indexOf(name);
+      if (i !== -1) return i;
+    }
+    return -1;
+  };
+
+  const idx = {
+    no: find("no", "number"),
+    question: find("question"),
+    A: find("a"),
+    B: find("b"),
+    C: find("c"),
+    D: find("d"),
+    answer: find("answer"),
+    clue: find("clue", "hint"),
+    explanation: find("explanation"),
+    source: find("source")
+  };
+
+  const required = ["question","A","B","C","D","answer"];
+  const missing = required.filter(k => idx[k] === -1);
+  if (missing.length) {
+    throw new Error("Missing required column(s): " + missing.join(", "));
+  }
+
+  return rows.slice(1).map((r, i) => ({
+    id: String(r[idx.no] || i + 1) + "-" + i,
+    no: r[idx.no] || String(i + 1),
+    question: r[idx.question] || "",
+    A: r[idx.A] || "",
+    B: r[idx.B] || "",
+    C: r[idx.C] || "",
+    D: r[idx.D] || "",
+    answer: String(r[idx.answer] || "").trim().toUpperCase(),
+    clue: idx.clue >= 0 ? r[idx.clue] : "",
+    explanation: idx.explanation >= 0 ? r[idx.explanation] : "",
+    source: idx.source >= 0 ? r[idx.source] : ""
+  })).filter(r =>
+    r.question.trim() &&
+    ["A","B","C","D"].every(k => r[k].trim()) &&
+    ["A","B","C","D"].includes(r.answer)
+  );
+}
+
+async function loadQuestions() {
+  try {
+    const response = await fetch(GOOGLE_SHEET_CSV_URL, {cache:"no-store"});
+    if (!response.ok) throw new Error(`Google Sheet request failed (${response.status}).`);
+    const text = await response.text();
+    const records = parseCSV(text);
+    if (!records.length) throw new Error("The Google Sheet returned no valid questions.");
+    return {records, source:"Google Sheets"};
+  } catch (error) {
+    console.warn("Google Sheet could not be loaded:", error);
+    return {records:DEMO_DATA.map((r,i)=>({...r,id:"demo-"+i})), source:"Demo fallback"};
+  }
+}
+
+function currentRecord() {
+  return state.records.find(r => r.id === state.order[state.position]);
+}
+
+function updateProgress() {
+  const total = state.order.length;
+  const shown = total ? (state.completed ? total : state.position + 1) : 0;
+  $("progressCount").textContent = `${shown} / ${total}`;
+  $("progressFill").style.width = total ? `${shown / total * 100}%` : "0%";
+  $("score").textContent = state.score;
+}
+
+function shuffledChoices(record) {
+  const choices = [
+    {key:"A", text:record.A},
+    {key:"B", text:record.B},
+    {key:"C", text:record.C},
+    {key:"D", text:record.D}
+  ];
+
+  for (let i = choices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [choices[i], choices[j]] = [choices[j], choices[i]];
+  }
+  return choices;
+}
+
+function showCurrent() {
+  $("loading").hidden = true;
+  $("error").hidden = true;
+  $("empty").hidden = true;
+  $("questionCard").hidden = true;
+  $("complete").hidden = true;
+
+  if (!state.records.length) {
+    $("empty").hidden = false;
+    $("status").textContent = "Question bank is empty.";
+    updateProgress();
+    return;
+  }
+
+  if (state.completed) {
+    $("complete").hidden = false;
+    $("finalScore").textContent = `${state.score} / ${state.order.length}`;
+    const percentage = Math.round((state.score / state.order.length) * 100);
+    $("finalMessage").textContent =
+      percentage === 100 ? "Perfect score! Treasure hunter extraordinaire." :
+      percentage >= 80 ? "Excellent work!" :
+      percentage >= 60 ? "Good job! Keep hunting." :
+      "Keep practising and try again!";
+    $("status").textContent = "Completed.";
+    updateProgress();
+    return;
+  }
+
+  const record = currentRecord();
+  if (!record) {
+    state.position = 0;
+    showCurrent();
+    return;
+  }
+
+  $("category").textContent = `Question ${record.no}`;
+  $("question").textContent = record.question;
+
+  $("clue").textContent = record.clue ? "Clue: " + record.clue : "";
+  $("clue").hidden = !record.clue;
+
+  $("feedback").hidden = true;
+  $("explanation").hidden = true;
+  $("source").hidden = true;
+  $("next").hidden = true;
+
+  const options = $("options");
+  options.replaceChildren();
+
+  shuffledChoices(record).forEach(choice => {
+    const button = document.createElement("button");
+    button.className = "option";
+    button.innerHTML =
+      `<span class="option-label">${choice.key}</span>${escapeHTML(choice.text)}`;
+    button.addEventListener("click", () => answerQuestion(button, choice.key, record));
+    options.appendChild(button);
+  });
+
+  state.answered = false;
+  $("questionCard").hidden = false;
+  $("status").textContent = `Question ${state.position + 1} of ${state.order.length}`;
+  updateProgress();
+}
+
+function escapeHTML(value) {
+  const div = document.createElement("div");
+  div.textContent = value;
+  return div.innerHTML;
+}
+
+function answerQuestion(button, chosenKey, record) {
+  if (state.answered) return;
+
+  state.answered = true;
+  const correct = chosenKey === record.answer;
+
+  if (correct) state.score++;
+
+  document.querySelectorAll(".option").forEach(b => {
+    b.disabled = true;
+    const label = b.querySelector(".option-label")?.textContent;
+    if (label === record.answer) b.classList.add("correct");
+  });
+
+  if (!correct) button.classList.add("wrong");
+
+  $("feedback").className = "feedback " + (correct ? "correct" : "wrong");
+  $("feedback").textContent = correct
+    ? "✓ Correct!"
+    : `✕ Incorrect. The correct answer was ${record.answer}.`;
+  $("feedback").hidden = false;
+
+  if (record.explanation) {
+    $("explanation").textContent = record.explanation;
+    $("explanation").hidden = false;
+  }
+
+  if (record.source) {
+    $("source").textContent = "Source: " + record.source;
+    $("source").hidden = false;
+  }
+
+  $("next").hidden = false;
+  updateProgress();
+}
+
+function restart(shuffle = false) {
+  state.order = state.records.map(r => r.id);
+
+  if (shuffle) {
+    for (let i = state.order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [state.order[i], state.order[j]] = [state.order[j], state.order[i]];
+    }
+  }
+
+  state.position = 0;
+  state.score = 0;
+  state.answered = false;
+  state.completed = false;
+  showCurrent();
+}
+
+function nextCard() {
+  if (state.position < state.order.length - 1) {
+    state.position++;
+  } else {
+    state.completed = true;
+  }
+  showCurrent();
+}
+
+$("next").addEventListener("click", nextCard);
+$("restart").addEventListener("click", () => restart(false));
+$("shuffle").addEventListener("click", () => restart(true));
+$("completeRestart").addEventListener("click", () => restart(true));
+
+(async function init() {
+  try {
+    const result = await loadQuestions();
+    state.records = result.records;
+    restart(true);
+
+    $("status").textContent =
+      result.source === "Google Sheets"
+        ? `${state.records.length} questions loaded from Google Sheets.`
+        : `Using demo fallback (${state.records.length} questions). Google Sheet could not be reached.`;
+  } catch (error) {
+    console.error(error);
+    $("loading").hidden = true;
+    $("error").hidden = false;
+    $("error").textContent = "Unable to start the quiz: " + error.message;
+    $("status").textContent = "Question bank failed to load.";
+  }
+})();
+</script>
+</body>
+</html>
