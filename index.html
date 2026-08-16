@@ -32,6 +32,30 @@ h1{margin:0;font-size:clamp(1.8rem,5vw,3rem)}
 .loading{font-size:1rem}
 [hidden]{display:none!important}
 @media(max-width:640px){.setup-grid,.options{grid-template-columns:1fr}.field.full{grid-column:auto}.app{width:min(100% - 20px,900px);padding:20px 0}.card,.center{min-height:520px;border-radius:20px}}
+.clue-toggle{
+  margin-top:18px;
+  padding:9px 14px;
+  border:1px dashed #aaa;
+  border-radius:10px;
+  background:transparent;
+  color:#666;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .2s,border-color .2s;
+}
+
+.clue-toggle:hover{
+  background:#eeeae1;
+  border-color:#777;
+}
+
+.clue{
+  margin-top:12px;
+  color:#666;
+  font-style:italic;
+  line-height:1.5;
+}
+
 </style>
 </head>
 <body>
@@ -96,7 +120,11 @@ h1{margin:0;font-size:clamp(1.8rem,5vw,3rem)}
     <div>
       <span id="category" class="tag">Question</span>
       <h2 id="question" class="question"></h2>
-      <p id="clue" class="clue" hidden></p>
+      <button id="clueToggle" class="clue-toggle" type="button" hidden>
+  💡 Show Clue
+</button>
+<p id="clue" class="clue" hidden></p>
+
       <div id="options" class="options"></div>
       <div id="feedback" class="feedback" hidden></div>
       <div id="explanation" class="explanation" hidden></div>
@@ -253,7 +281,17 @@ function showCurrent(){
   if(!record){showSetup();return}
   $("category").textContent=record.questionType||"Question";
   $("question").textContent=record.question;
-  $("clue").textContent=record.clue?"Clue: "+record.clue:"";$("clue").hidden=!record.clue;
+
+const clueToggle = $("clueToggle");
+const clue = $("clue");
+
+clue.hidden = true;
+clueToggle.hidden = !record.clue;
+clueToggle.textContent = "💡 Show Clue";
+
+if (record.clue) {
+  clue.textContent = "Clue: " + record.clue;
+}
   $("feedback").hidden=true;$("explanation").hidden=true;$("source").hidden=true;$("next").hidden=true;
   const options=$("options");options.replaceChildren();
   shuffledChoices(record).forEach(choice=>{
@@ -296,6 +334,18 @@ $("randomHunt").addEventListener("click",()=>startGame(state.records,10,true));
 $("next").addEventListener("click",nextCard);
 $("restart").addEventListener("click",confirmRestart);
 $("completeRestart").addEventListener("click",showSetup);
+$("clueToggle").addEventListener("click", () => {
+  const clue = $("clue");
+  const toggle = $("clueToggle");
+
+  if (clue.hidden) {
+    clue.hidden = false;
+    toggle.textContent = "💡 Hide Clue";
+  } else {
+    clue.hidden = true;
+    toggle.textContent = "💡 Show Clue";
+  }
+});
 
 (async function init(){
   try{
