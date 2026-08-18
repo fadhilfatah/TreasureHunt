@@ -1,363 +1,2331 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Treasure Hunt Quiz</title>
-<style>
-:root{--ink:#202020;--paper:#f7f5ef;--gold:#f4bb36;--green:#2f7d32;--red:#b33a3a}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:Arial,sans-serif;color:var(--paper);background:#202020;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:28px 28px}
-button{font:inherit;cursor:pointer}
-.app{width:min(100% - 32px,900px);margin:auto;padding:32px 0}
-header{display:flex;gap:16px;align-items:center;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:24px}
-.compass{width:46px;height:46px;display:grid;place-items:center;border:1px solid rgba(244,187,54,.55);border-radius:50%;color:var(--gold);font-size:24px;flex:none}
-.eyebrow{letter-spacing:.12em;text-transform:uppercase;font-size:.72rem}
-h1{margin:0;font-size:clamp(1.8rem,5vw,3rem)}
-.progress{margin:28px 0;padding:16px 20px;border:1px solid rgba(255,255,255,.15);border-radius:16px;background:rgba(0,0,0,.15)}
-.progress-row{display:flex;justify-content:space-between;margin-bottom:10px}.track{height:7px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden}.fill{height:100%;width:0;background:var(--gold);transition:width .3s}.score-row{display:flex;justify-content:space-between;margin-top:10px;color:#ddd}
-.card{min-height:480px;background:var(--paper);color:var(--ink);border-radius:24px;padding:clamp(24px,5vw,48px);box-shadow:0 22px 50px rgba(0,0,0,.24);display:flex;flex-direction:column;justify-content:space-between}
-.center{min-height:480px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.setup-card{justify-content:flex-start}.setup-card h2{margin-top:0;font-size:1.8rem}.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.field{display:flex;flex-direction:column;gap:8px}.field label{font-weight:700}.field select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #c7c1b5;background:#fff;color:#202020;font:inherit}.field.full{grid-column:1/-1}
-.random-box{margin-top:24px;padding:18px;border:1px solid #d4cdbf;border-radius:14px;background:#fff}.random-box p{margin:0 0 12px;color:#555;line-height:1.5}
-.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;background:#202020;color:#fff}.btn.gold{background:var(--gold);color:#202020}.btn.secondary{background:transparent;color:#202020;border:1px solid #bbb}.btn:disabled{opacity:.45;cursor:not-allowed}
-.setup-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-.tag{display:inline-block;padding:6px 12px;border-radius:999px;background:#e5dfd2;color:#575757;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
-.question{margin:28px 0 0;font-size:clamp(1.5rem,4vw,2.5rem);line-height:1.15}.clue{margin-top:16px;color:#666;font-style:italic;line-height:1.5}
-.options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}.option{min-height:78px;border:2px solid #d5d0c5;border-radius:14px;background:#fff;color:#202020;padding:15px;text-align:left;font-weight:700;transition:transform .15s,border-color .15s,background .15s}.option:hover:not(:disabled){transform:translateY(-2px);border-color:#999}.option.correct{background:#e7f3e7;border-color:var(--green)}.option.wrong{background:#f8e6e6;border-color:var(--red)}.option:disabled{cursor:default}
-.feedback{margin-top:20px;padding:14px;border-radius:12px;line-height:1.5;font-weight:700}.feedback.correct{background:#e7f3e7;color:#245c27}.feedback.wrong{background:#f8e6e6;color:#7b2525}.explanation{margin-top:14px;color:#4b4b4b;line-height:1.65;white-space:pre-line}.source{margin-top:14px;color:#777;font-size:.85rem}
-.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:28px}.trophy{font-size:52px;margin-bottom:12px}.final-score{font-size:2.2rem;font-weight:800}
-.controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}.controls .btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff}.status{color:#d7d4cc}
-.error{padding:18px;border:1px solid #d77;background:#3a2020;border-radius:14px;line-height:1.5}
-.loading{font-size:1rem}
-[hidden]{display:none!important}
-@media(max-width:640px){.setup-grid,.options{grid-template-columns:1fr}.field.full{grid-column:auto}.app{width:min(100% - 20px,900px);padding:20px 0}.card,.center{min-height:520px;border-radius:20px}}
-.clue-toggle{
-  margin-top:18px;
-  padding:9px 14px;
-  border:1px dashed #aaa;
-  border-radius:10px;
-  background:transparent;
-  color:#666;
-  font-weight:600;
-  cursor:pointer;
-  transition:background .2s,border-color .2s;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.clue-toggle:hover{
-  background:#eeeae1;
-  border-color:#777;
-}
+  <title>Treasure Hunt</title>
 
-.clue{
-  margin-top:12px;
-  color:#666;
-  font-style:italic;
-  line-height:1.5;
-}
+  <script src="https://cdn.tailwindcss.com"></script>
 
-</style>
+  <style>
+    :root {
+      --ink: #202020;
+      --slate: #575757;
+      --paper: #f7f5ef;
+      --gold: #f4bb36;
+      --green: #3d8b5f;
+      --red: #b94a48;
+      --line: rgba(255,255,255,.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: var(--paper);
+      --background: var(--slate);
+      overflow-x: hidden;
+
+      background:#202020;
+      background-image:linear-gradient(rgba(255,255,255,.045) 	1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+      background-size:28px 28px;
+
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      padding: 28px 16px;
+      background:
+        linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+        var(--slate);
+      background-size: 28px 28px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-family: monospace;
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .compass {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(244,187,54,.55);
+      border-radius: 50%;
+      color: var(--gold);
+      font-size: 24px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(1.7rem, 5vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .header-subtitle {
+      margin: 8px 0 0;
+      color: rgba(247,245,239,.75);
+      line-height: 1.5;
+    }
+
+    .panel {
+      margin-top: 24px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.14);
+    }
+
+    .setup-title {
+      margin-bottom: 20px;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 10px;
+      background: #f7f5ef;
+      color: #202020;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(244,187,54,.25);
+    }
+
+    .primary-button,
+    .secondary-button,
+    .feedback-button,
+    .restart-button {
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 16px;
+      font-weight: 700;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    .primary-button {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .secondary-button {
+      border: 1px solid rgba(255,255,255,.25);
+      background: transparent;
+      color: var(--paper);
+    }
+
+    .primary-button:hover,
+    .secondary-button:hover,
+    .feedback-button:hover,
+    .restart-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary-button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    /* Compact progress */
+    .progress-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(0,0,0,.14);
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+      font-size: .8rem;
+    }
+
+    .progress-track {
+      height: 4px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.15);
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--gold);
+      transition: width .35s ease;
+    }
+
+    .score {
+      color: var(--gold);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Question card */
+    .card {
+      min-height: 440px;
+      padding: clamp(24px, 5vw, 42px);
+      border-radius: 22px;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 20px 50px rgba(0,0,0,.22);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-area {
+      flex: 1;
+    }
+
+    .question {
+      margin: 20px 0 0;
+      font-size: clamp(1.45rem, 4vw, 2.1rem);
+      line-height: 1.2;
+    }
+
+    /* Same-line clue */
+    .clue-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      min-height: 32px;
+    }
+
+    .clue-toggle {
+      padding: 7px 11px;
+      border: 1px dashed #aaa;
+      border-radius: 9px;
+      background: transparent;
+      color: #666;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    .clue-toggle:hover {
+      background: #eeeae1;
+    }
+
+    .clue {
+      margin: 0;
+      color: #666;
+      font-size: .9rem;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .answer-button {
+      position: relative;
+      min-height: 66px;
+      padding: 14px 16px;
+      border: 2px solid #d8d3c8;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+      font-weight: 600;
+      transition: border-color .15s ease, background .15s ease, transform .15s ease;
+    }
+
+    .answer-button:hover:not(:disabled) {
+      border-color: #999;
+      transform: translateY(-1px);
+    }
+
+    .answer-button:disabled {
+      cursor: default;
+    }
+
+    .answer-button.correct {
+      border-color: var(--green);
+      background: #e7f3eb;
+    }
+
+    .answer-button.incorrect {
+      border-color: var(--red);
+      background: #f8e5e4;
+    }
+
+    .answer-button.correct::after {
+      content: "✓";
+      position: absolute;
+      top: 9px;
+      right: 12px;
+      color: var(--green);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .answer-button.incorrect::after {
+      content: "✕";
+      position: absolute;
+      top: 9px;
+      right: 12px;
+      color: var(--red);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .answer-message {
+      min-height: 24px;
+      margin-top: 14px;
+      font-weight: 700;
+    }
+
+    .answer-message.correct-message {
+      color: var(--green);
+    }
+
+    .answer-message.incorrect-message {
+      color: var(--red);
+    }
+
+    .explanation {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #ebe7dd;
+      color: #444;
+      line-height: 1.55;
+    }
+
+    .next-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    /* Metadata */
+    .metadata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #ddd7ca;
+    }
+
+    .metadata-tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #e5dfd2;
+      color: #575757;
+      font-family: monospace;
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* Completion */
+    .completion {
+      margin-top: 24px;
+    }
+
+    .completion-score {
+      margin: 4px 0 24px;
+      color: var(--gold);
+      font-size: 2.8rem;
+      font-weight: 800;
+    }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .review-item {
+      border: 1px solid #d8d3c8;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .review-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 14px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .review-button:hover {
+      background: #f4f1ea;
+    }
+
+    .review-status {
+      width: 22px;
+      flex: 0 0 22px;
+      font-weight: 800;
+    }
+
+    .review-status.correct {
+      color: var(--green);
+    }
+
+    .review-status.incorrect {
+      color: var(--red);
+    }
+
+    .review-question {
+      flex: 1;
+    }
+
+    .review-details {
+      display: none;
+      padding: 0 14px 16px 46px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .review-item.open .review-details {
+      display: block;
+    }
+
+    .review-answer {
+      margin-top: 10px;
+    }
+
+    .review-correct {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .review-feedback {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #ddd7ca;
+    }
+
+    .feedback-label {
+      width: 100%;
+      margin-bottom: 2px;
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    .feedback-button {
+      padding: 7px 10px;
+      border: 1px solid #d0cabd;
+      background: #f7f5ef;
+      color: #444;
+      font-size: .8rem;
+    }
+
+    .feedback-button.selected-good {
+      border-color: var(--green);
+      background: #e7f3eb;
+    }
+
+    .feedback-button.selected-bad {
+      border-color: var(--red);
+      background: #f8e5e4;
+    }
+
+    .feedback-status {
+      font-size: .78rem;
+      color: #777;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .notice {
+      min-height: 20px;
+      margin-top: 12px;
+      color: #ffd;
+      font-size: .85rem;
+    }
+
+    .error {
+      color: #ffd1d1;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .answers {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        min-height: 470px;
+      }
+
+      .progress-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
-<header>
-  <div class="compass">✦</div>
-  <div><div class="eyebrow">Treasure Hunt</div><h1>Quiz Challenge</h1></div>
-</header>
 
-<section id="progressPanel" class="progress" hidden>
-  <div class="progress-row"><span>Progress</span><strong id="progressCount">0 / 0</strong></div>
-  <div class="track"><div id="progressFill" class="fill"></div></div>
-  <div class="score-row"><span>Score</span><strong id="score">0</strong></div>
-</section>
+<div class="app-shell">
 
-<main>
-  <div id="loading" class="card center"><div class="loading">Loading question bank…</div></div>
-  <div id="error" class="error" hidden></div>
+  <div class="container">
 
-  <section id="setup" class="card setup-card" hidden>
-    <h2>Set Up Your Hunt</h2>
-    <p>Choose how many questions you want to attempt and the type of questions you want to receive.</p>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="compass">⌖</div>
 
-    <div class="setup-grid">
-      <div class="field">
-        <label for="questionCount">Number of questions</label>
-        <select id="questionCount">
-          <option value="5">5 questions</option>
-          <option value="10" selected>10 questions</option>
-        </select>
+      <div>
+        <div class="eyebrow">Treasure Hunt</div>
+        <h1>Question Challenge</h1>
+      </div>
+    </header>
+
+
+    <!-- SETUP SCREEN -->
+    <section id="setupScreen" class="panel">
+
+      <h2 class="setup-title">Set Up Your Hunt</h2>
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label for="questionCount">Number of Questions</label>
+
+          <select id="questionCount">
+            <option value="5">5 Questions</option>
+            <option value="10" selected>10 Questions</option>
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label for="difficultyFilter">Difficulty</label>
+
+          <select id="difficultyFilter">
+            <option value="">Any Difficulty</option>
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label for="sourceFilter">Source</label>
+
+          <select id="sourceFilter">
+            <option value="">Any Source</option>
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label for="typeFilter">Question Type</label>
+
+          <select id="typeFilter">
+            <option value="">Any Question Type</option>
+          </select>
+        </div>
+
       </div>
 
-      <div class="field">
-        <label for="difficulty">Difficulty</label>
-        <select id="difficulty"><option value="">Any difficulty</option></select>
+
+      <div class="button-row">
+
+        <button
+          id="startButton"
+          class="primary-button"
+          type="button"
+        >
+          Start Hunt
+        </button>
+
       </div>
 
-      <div class="field">
-        <label for="sourceFilter">Source</label>
-        <select id="sourceFilter"><option value="">Any source</option></select>
+
+      <p id="setupNotice" class="notice"></p>
+
+    </section>
+
+
+    <!-- GAME SCREEN -->
+    <main id="gameScreen" class="hidden">
+
+      <section class="progress-panel">
+
+        <div>
+
+          <div class="progress-info">
+            <span id="progressText">Question 1 / 10</span>
+          </div>
+
+          <div class="progress-track">
+            <div
+              id="progressFill"
+              class="progress-fill"
+              style="width:0%"
+            ></div>
+          </div>
+
+        </div>
+
+        <div class="score">
+          Score: <span id="score">0</span>
+        </div>
+
+      </section>
+
+
+      <section id="cardContainer"></section>
+
+
+      <div class="button-row">
+
+        <button
+          id="restartButton"
+          class="secondary-button"
+          type="button"
+        >
+          Restart
+        </button>
+
       </div>
 
-      <div class="field">
-        <label for="questionType">Question type</label>
-        <select id="questionType"><option value="">Any question type</option></select>
+    </main>
+
+
+    <!-- COMPLETION SCREEN -->
+    <section id="completionScreen" class="panel completion hidden">
+
+      <div class="eyebrow">Round Complete</div>
+
+      <h2>Well Done!</h2>
+
+      <div id="completionScore" class="completion-score">
+        0 / 10
       </div>
-    </div>
 
-    <div class="random-box">
-      <p><strong>Random Hunt</strong><br>Skip the filters and get 10 questions selected at random from the entire question bank.</p>
-      <button id="randomHunt" class="btn secondary">Start Random Hunt</button>
-    </div>
+      <p>
+        Tap a question below to review your answer and explanation.
+      </p>
 
-    <div class="setup-actions">
-      <button id="startButton" class="btn gold">Start Hunt</button>
-    </div>
 
-    <p id="setupMessage" style="color:#8a2929;margin-top:16px" hidden></p>
-  </section>
+      <div id="reviewList" class="review-list"></div>
 
-  <article id="questionCard" class="card" hidden>
-    <div>
-      <span id="category" class="tag">Question</span>
-      <h2 id="question" class="question"></h2>
-      <button id="clueToggle" class="clue-toggle" type="button" hidden>
-  💡 Show Clue
-</button>
-<p id="clue" class="clue" hidden></p>
 
-      <div id="options" class="options"></div>
-      <div id="feedback" class="feedback" hidden></div>
-      <div id="explanation" class="explanation" hidden></div>
-      <div id="source" class="source" hidden></div>
-    </div>
-    <div class="actions"><button id="next" class="btn gold" hidden>Next →</button></div>
-  </article>
+      <div class="button-row">
 
-  <div id="complete" class="card center" hidden>
-    <div class="trophy">🏆</div>
-    <h2>Treasure Hunt Complete!</h2>
-    <div id="finalScore" class="final-score"></div>
-    <p id="finalMessage"></p>
-    <button id="completeRestart" class="btn gold">Play Again</button>
+        <button
+          id="completionRestartButton"
+          class="primary-button"
+          type="button"
+        >
+          Start Another Round
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <p id="globalNotice" class="notice"></p>
+
   </div>
-</main>
 
-<div id="gameControls" class="controls" hidden>
-  <div class="status" id="status"></div>
-  <button id="restart" class="btn">↻ Restart</button>
 </div>
-</div>
+
 
 <script>
-const GOOGLE_SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5pyFbxrbzTpAcFyStBf29mZxLayBSl2izWxwzEmqIw2OYGg49Sm2HBors6dczcRvKfOz6PT2Y8qxX/pub?gid=0&single=true&output=csv";
 
-const state={records:[],order:[],position:0,score:0,answered:false,completed:false,filters:null};
+  /*
+   * ==========================================================
+   * CONFIGURATION
+   * ==========================================================
+   */
 
-const $=id=>document.getElementById(id);
+  const APPS_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbwCxD3k4UP5rngZvfoVAAkcKq0dXT77-lm7_wvizCF_OOC9g9S02u9qlLfbhDJXz1NL0Q/exec";
 
-function parseCSV(text){
-  const rows=[];let row=[],cell="",quoted=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i],next=text[i+1];
-    if(ch==='"'&&quoted&&next==='"'){cell+='"';i++}
-    else if(ch==='"')quoted=!quoted;
-    else if(ch===','&&!quoted){row.push(cell);cell=""}
-    else if((ch==='\n'||ch==='\r')&&!quoted){
-      if(ch==='\r'&&next==='\n')i++;
-      row.push(cell);cell="";
-      if(row.some(v=>v.trim()!==""))rows.push(row);row=[];
-    }else cell+=ch;
-  }
-  if(cell!==""||row.length){row.push(cell);if(row.some(v=>v.trim()!==""))rows.push(row)}
-  if(!rows.length)return[];
-  const headers=rows[0].map(h=>h.trim().toLowerCase());
-  const find=(...names)=>{for(const n of names){const i=headers.indexOf(n);if(i!==-1)return i}return -1};
-  const idx={
-    no:find("no","number"),question:find("question"),A:find("a"),B:find("b"),C:find("c"),D:find("d"),
-    answer:find("answer"),clue:find("clue","hint"),explanation:find("explanation"),source:find("source"),
-    difficulty:find("difficulty"),questionType:find("question type","question_type","type")
+
+  /*
+   * ==========================================================
+   * APPLICATION STATE
+   * ==========================================================
+   */
+
+  const state = {
+
+    records: [],
+
+    roundQuestions: [],
+
+    currentIndex: 0,
+
+    score: 0,
+
+    answers: [],
+
+    roundId: "",
+
+    questionCount: 10,
+
+    difficulty: "",
+
+    source: "",
+
+    questionType: ""
+
   };
-  const required=["question","A","B","C","D","answer"];
-  const missing=required.filter(k=>idx[k]===-1);
-  if(missing.length)throw new Error("Missing required column(s): "+missing.join(", "));
-  return rows.slice(1).map((r,i)=>({
-    id:String(r[idx.no]||i+1)+"-"+i,
-    no:r[idx.no]||String(i+1),question:r[idx.question]||"",
-    A:r[idx.A]||"",B:r[idx.B]||"",C:r[idx.C]||"",D:r[idx.D]||"",
-    answer:String(r[idx.answer]||"").trim().toUpperCase(),
-    clue:idx.clue>=0?r[idx.clue]:"",
-    explanation:idx.explanation>=0?r[idx.explanation]:"",
-    source:idx.source>=0?r[idx.source]:"",
-    difficulty:idx.difficulty>=0?r[idx.difficulty]:"",
-    questionType:idx.questionType>=0?r[idx.questionType]:""
-  })).filter(r=>r.question.trim()&&["A","B","C","D"].every(k=>r[k].trim())&&["A","B","C","D"].includes(r.answer));
-}
 
-async function loadQuestions(){
-  const response=await fetch(GOOGLE_SHEET_CSV_URL,{cache:"no-store"});
-  if(!response.ok)throw new Error(`Google Sheet request failed (${response.status}).`);
-  const records=parseCSV(await response.text());
-  if(!records.length)throw new Error("The Google Sheet returned no valid questions.");
-  return records;
-}
 
-function uniqueValues(field){
-  return [...new Set(state.records.map(r=>r[field]).map(v=>v.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-}
-function fillSelect(id,values){
-  const select=$(id);
-  values.forEach(v=>{const option=document.createElement("option");option.value=v;option.textContent=v;select.appendChild(option)});
-}
-function populateFilters(){
-  fillSelect("difficulty",uniqueValues("difficulty"));
-  fillSelect("sourceFilter",uniqueValues("source"));
-  fillSelect("questionType",uniqueValues("questionType"));
-}
+  /*
+   * ==========================================================
+   * DOM HELPERS
+   * ==========================================================
+   */
 
-function hideAllScreens(){
-  $("setup").hidden=true;$("questionCard").hidden=true;$("complete").hidden=true;$("error").hidden=true;$("loading").hidden=true;
-}
+  const $ = id => document.getElementById(id);
 
-function showSetup(){
-  hideAllScreens();
-  $("progressPanel").hidden=true;
-  $("gameControls").hidden=true;
-  $("setup").hidden=false;
-  $("setupMessage").hidden=true;
-}
 
-function filteredRecords(){
-  const difficulty=$("difficulty").value,source=$("sourceFilter").value,type=$("questionType").value;
-  return state.records.filter(r=>
-    (!difficulty||r.difficulty===difficulty)&&
-    (!source||r.source===source)&&
-    (!type||r.questionType===type)
-  );
-}
+  /*
+   * ==========================================================
+   * INITIALISE
+   * ==========================================================
+   */
 
-function startGame(records,count,randomAll=false){
-  if(!records.length){$("setupMessage").textContent="No questions match the selected filters. Please change your selection.";$("setupMessage").hidden=false;return}
-  const target=Math.min(count,records.length);
-  const shuffled=[...records];
-  for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}
-  const selected=shuffled.slice(0,target);
-  state.order=selected.map(r=>r.id);
-  state.position=0;state.score=0;state.answered=false;state.completed=false;
-  state.filters={count:target,randomAll};
-  $("progressPanel").hidden=false;$("gameControls").hidden=false;
-  showCurrent();
-}
+  document.addEventListener("DOMContentLoaded", async () => {
 
-function startFilteredGame(){
-  const count=Number($("questionCount").value);
-  startGame(filteredRecords(),count,false);
-}
+    $("startButton").addEventListener(
+      "click",
+      startRound
+    );
 
-function currentRecord(){return state.records.find(r=>r.id===state.order[state.position])}
+    $("restartButton").addEventListener(
+      "click",
+      confirmRestart
+    );
 
-function updateProgress(){
-  const total=state.order.length,shown=total?(state.completed?total:state.position+1):0;
-  $("progressCount").textContent=`${shown} / ${total}`;
-  $("progressFill").style.width=total?`${shown/total*100}%`:"0%";
-  $("score").textContent=state.score;
-}
+    $("completionRestartButton").addEventListener(
+      "click",
+      confirmRestart
+    );
 
-function shuffledChoices(record){
-  const choices=[{key:"A",text:record.A},{key:"B",text:record.B},{key:"C",text:record.C},{key:"D",text:record.D}];
-  for(let i=choices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]]}
-  return choices;
-}
+    await loadQuestionBank();
 
-function showCurrent(){
-  $("setup").hidden=true;$("questionCard").hidden=true;$("complete").hidden=true;
-  if(state.completed){
-    $("complete").hidden=false;
-    $("finalScore").textContent=`${state.score} / ${state.order.length}`;
-    const p=Math.round(state.score/state.order.length*100);
-    $("finalMessage").textContent=p===100?"Perfect score!":p>=80?"Excellent work!":p>=60?"Good job! Keep hunting.":"Keep practising and try again!";
-    $("status").textContent="Completed.";updateProgress();return;
-  }
-  const record=currentRecord();
-  if(!record){showSetup();return}
-  $("category").textContent=record.questionType||"Question";
-  $("question").textContent=record.question;
-
-const clueToggle = $("clueToggle");
-const clue = $("clue");
-
-clue.hidden = true;
-clueToggle.hidden = !record.clue;
-clueToggle.textContent = "💡 Show Clue";
-
-if (record.clue) {
-  clue.textContent = "Clue: " + record.clue;
-}
-  $("feedback").hidden=true;$("explanation").hidden=true;$("source").hidden=true;$("next").hidden=true;
-  const options=$("options");options.replaceChildren();
-  shuffledChoices(record).forEach(choice=>{
-    const button=document.createElement("button");button.className="option";button.textContent=choice.text;
-    button.addEventListener("click",()=>answerQuestion(button,choice.key,record));options.appendChild(button);
   });
-  state.answered=false;$("questionCard").hidden=false;
-  $("status").textContent=`Question ${state.position+1} of ${state.order.length}`;updateProgress();
-}
 
-function answerQuestion(button,chosenKey,record){
-  if(state.answered)return;state.answered=true;
-  const correct=chosenKey===record.answer;if(correct)state.score++;
-  document.querySelectorAll(".option").forEach(b=>{b.disabled=true});
-  const buttons=[...document.querySelectorAll(".option")];
-  const correctText=record[record.answer];
-  const correctButton=buttons.find(b=>b.textContent===correctText);
-  if(correctButton)correctButton.classList.add("correct");
-  if(!correct)button.classList.add("wrong");
-  $("feedback").className="feedback "+(correct?"correct":"wrong");
-  $("feedback").textContent=correct?"✓ Correct!":"✕ Incorrect.";
-  $("feedback").hidden=false;
-  if(record.explanation){$("explanation").textContent=record.explanation;$("explanation").hidden=false}
-  if(record.source){$("source").textContent="Source: "+record.source;$("source").hidden=false}
-  $("next").hidden=false;updateProgress();
-}
 
-function nextCard(){
-  if(state.position<state.order.length-1)state.position++;else state.completed=true;
-  showCurrent();
-}
+  /*
+   * ==========================================================
+   * LOAD QUESTION BANK
+   *
+   * Reads the published Google Sheets CSV.
+   * ==========================================================
+   */
 
-function confirmRestart(){
-  const ok=window.confirm("Are you sure you want to restart the game? Your current progress and score will be lost.");
-  if(ok)showSetup();
-}
+  async function loadQuestionBank() {
 
-$("startButton").addEventListener("click",startFilteredGame);
-$("randomHunt").addEventListener("click",()=>startGame(state.records,10,true));
-$("next").addEventListener("click",nextCard);
-$("restart").addEventListener("click",confirmRestart);
-$("completeRestart").addEventListener("click",showSetup);
-$("clueToggle").addEventListener("click", () => {
-  const clue = $("clue");
-  const toggle = $("clueToggle");
+    try {
 
-  if (clue.hidden) {
-    clue.hidden = false;
-    toggle.textContent = "💡 Hide Clue";
-  } else {
-    clue.hidden = true;
-    toggle.textContent = "💡 Show Clue";
+      $("setupNotice").textContent =
+        "Loading question bank...";
+
+
+      const csvUrl =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5pyFbxrbzTpAcFyStBf29mZxLayBSl2izWxwzEmqIw2OYGg49Sm2HBors6dczcRvKfOz6PT2Y8qxX/pub?gid=0&single=true&output=csv";
+
+
+      const response = await fetch(
+        csvUrl + "&t=" + Date.now()
+      );
+
+
+      if (!response.ok) {
+        throw new Error(
+          "Unable to load Google Sheets data."
+        );
+      }
+
+
+      const csvText = await response.text();
+
+      state.records = parseCSV(csvText)
+        .filter(record => record.No !== "");
+
+
+      if (!state.records.length) {
+        throw new Error(
+          "No questions were found."
+        );
+      }
+
+
+      populateFilters();
+
+      $("setupNotice").textContent =
+        state.records.length +
+        " questions loaded.";
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      $("setupNotice").textContent =
+        "Unable to load the question bank.";
+
+      $("setupNotice").classList.add("error");
+
+    }
+
   }
-});
 
-(async function init(){
-  try{
-    state.records=await loadQuestions();
-    populateFilters();
-    showSetup();
-    $("status").textContent=`${state.records.length} questions available.`;
-  }catch(e){
-    console.error(e);$("loading").hidden=true;$("error").hidden=false;
-    $("error").textContent="Unable to load the question bank. "+e.message+" Make sure the Google Sheet is published as CSV and accessible.";
+
+  /*
+   * ==========================================================
+   * CSV PARSER
+   * ==========================================================
+   */
+
+  function parseCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+
+    let value = "";
+
+    let insideQuotes = false;
+
+
+    for (let i = 0; i < text.length; i++) {
+
+      const char = text[i];
+
+      const next = text[i + 1];
+
+
+      if (char === '"' && insideQuotes && next === '"') {
+
+        value += '"';
+
+        i++;
+
+        continue;
+
+      }
+
+
+      if (char === '"') {
+
+        insideQuotes = !insideQuotes;
+
+        continue;
+
+      }
+
+
+      if (char === "," && !insideQuotes) {
+
+        row.push(value);
+
+        value = "";
+
+        continue;
+
+      }
+
+
+      if (
+        (char === "\n" || char === "\r") &&
+        !insideQuotes
+      ) {
+
+        if (char === "\r" && next === "\n") {
+          i++;
+        }
+
+        row.push(value);
+
+        rows.push(row);
+
+        row = [];
+
+        value = "";
+
+        continue;
+
+      }
+
+
+      value += char;
+
+    }
+
+
+    if (value !== "" || row.length) {
+
+      row.push(value);
+
+      rows.push(row);
+
+    }
+
+
+    if (!rows.length) {
+      return [];
+    }
+
+
+    const headers = rows[0].map(
+      header => header.trim()
+    );
+
+
+    return rows
+      .slice(1)
+      .map(columns => {
+
+        const record = {};
+
+        headers.forEach((header, index) => {
+
+          record[header] =
+            (columns[index] || "").trim();
+
+        });
+
+        return record;
+
+      });
+
   }
-})();
+
+
+  /*
+   * ==========================================================
+   * FILTERS
+   * ==========================================================
+   */
+
+  function populateFilters() {
+
+    populateSelect(
+      $("difficultyFilter"),
+      uniqueValues("Difficulty"),
+      "Any Difficulty"
+    );
+
+
+    populateSelect(
+      $("sourceFilter"),
+      uniqueValues("Source"),
+      "Any Source"
+    );
+
+
+    populateSelect(
+      $("typeFilter"),
+      uniqueValues("Question Type"),
+      "Any Question Type"
+    );
+
+  }
+
+
+  function uniqueValues(column) {
+
+    return [
+      ...new Set(
+        state.records
+          .map(record => record[column])
+          .filter(Boolean)
+      )
+    ].sort();
+
+  }
+
+
+  function populateSelect(
+    select,
+    values,
+    defaultLabel
+  ) {
+
+    select.innerHTML = "";
+
+    const defaultOption =
+      document.createElement("option");
+
+    defaultOption.value = "";
+
+    defaultOption.textContent = defaultLabel;
+
+    select.appendChild(defaultOption);
+
+
+    values.forEach(value => {
+
+      const option =
+        document.createElement("option");
+
+      option.value = value;
+
+      option.textContent = value;
+
+      select.appendChild(option);
+
+    });
+
+  }
+
+
+  /*
+   * ==========================================================
+   * START ROUND
+   * ==========================================================
+   */
+
+  function startRound() {
+
+    const count =
+      Number($("questionCount").value);
+
+
+    const difficulty =
+      $("difficultyFilter").value;
+
+    const source =
+      $("sourceFilter").value;
+
+    const questionType =
+      $("typeFilter").value;
+
+
+    let pool =
+      state.records.filter(record => {
+
+        if (
+          difficulty &&
+          record.Difficulty !== difficulty
+        ) {
+          return false;
+        }
+
+
+        if (
+          source &&
+          record.Source !== source
+        ) {
+          return false;
+        }
+
+
+        if (
+          questionType &&
+          record["Question Type"] !== questionType
+        ) {
+          return false;
+        }
+
+
+        return true;
+
+      });
+
+
+    if (pool.length < count) {
+
+      $("setupNotice").textContent =
+        "There are only " +
+        pool.length +
+        " questions matching your selected filters.";
+
+      $("setupNotice").classList.add("error");
+
+      return;
+
+    }
+
+
+    /*
+     * Randomise the matching pool.
+     */
+
+    pool = shuffleArray(pool);
+
+
+    state.roundQuestions =
+      pool.slice(0, count);
+
+    state.currentIndex = 0;
+
+    state.score = 0;
+
+    state.answers = [];
+
+    state.questionCount = count;
+
+    state.difficulty = difficulty;
+
+    state.source = source;
+
+    state.questionType = questionType;
+
+    state.roundId = generateRoundId();
+
+
+    $("setupScreen").classList.add("hidden");
+
+    $("completionScreen").classList.add("hidden");
+
+    $("gameScreen").classList.remove("hidden");
+
+    $("score").textContent = "0";
+
+    showCurrentQuestion();
+
+  }
+
+
+  /*
+   * ==========================================================
+   * SHOW CURRENT QUESTION
+   * ==========================================================
+   */
+
+  function showCurrentQuestion() {
+
+    const record =
+      state.roundQuestions[state.currentIndex];
+
+
+    if (!record) {
+
+      completeRound();
+
+      return;
+
+    }
+
+
+    const card =
+      document.createElement("article");
+
+    card.className = "card";
+
+
+    const questionArea =
+      document.createElement("div");
+
+    questionArea.className = "question-area";
+
+
+    const question =
+      document.createElement("h2");
+
+    question.className = "question";
+
+    question.textContent =
+      record.Question;
+
+
+    /*
+     * Clue row
+     */
+
+    const clueRow =
+      document.createElement("div");
+
+    clueRow.className = "clue-row";
+
+
+    if (record.Clue) {
+
+      const clueToggle =
+        document.createElement("button");
+
+      clueToggle.type = "button";
+
+      clueToggle.className =
+        "clue-toggle";
+
+      clueToggle.textContent =
+        "💡 Show Clue";
+
+
+      const clue =
+        document.createElement("p");
+
+      clue.className = "clue hidden";
+
+      clue.textContent =
+        "Clue: " + record.Clue;
+
+
+      clueToggle.addEventListener(
+        "click",
+        () => {
+
+          clue.classList.toggle("hidden");
+
+          clueToggle.textContent =
+            clue.classList.contains("hidden")
+              ? "💡 Show Clue"
+              : "💡 Hide Clue";
+
+        }
+      );
+
+
+      clueRow.appendChild(clueToggle);
+
+      clueRow.appendChild(clue);
+
+    }
+
+
+    questionArea.appendChild(question);
+
+    questionArea.appendChild(clueRow);
+
+
+    /*
+     * Answers
+     */
+
+    const answers =
+      document.createElement("div");
+
+    answers.className = "answers";
+
+
+    const choices = [
+
+      record.A,
+      record.B,
+      record.C,
+      record.D
+
+    ].filter(Boolean);
+
+
+    /*
+     * Randomise answer display positions.
+     */
+
+    const shuffledChoices =
+      shuffleArray(
+        choices.map(choice => ({
+          text: choice,
+          correct:
+            choice === record.Answer
+        }))
+      );
+
+
+    shuffledChoices.forEach(choice => {
+
+      const button =
+        document.createElement("button");
+
+      button.type = "button";
+
+      button.className =
+        "answer-button";
+
+      /*
+       * No A/B/C/D labels are displayed.
+       */
+
+      button.textContent =
+        choice.text;
+
+
+      button.addEventListener(
+        "click",
+        () => handleAnswer(
+          button,
+          choice,
+          record,
+          shuffledChoices
+        )
+      );
+
+
+      answers.appendChild(button);
+
+    });
+
+
+    questionArea.appendChild(answers);
+
+
+    /*
+     * Answer message
+     */
+
+    const answerMessage =
+      document.createElement("div");
+
+    answerMessage.className =
+      "answer-message";
+
+
+    questionArea.appendChild(
+      answerMessage
+    );
+
+
+    /*
+     * Explanation
+     */
+
+    const explanation =
+      document.createElement("div");
+
+    explanation.className =
+      "explanation hidden";
+
+    explanation.textContent =
+      record.Explanation || "";
+
+
+    questionArea.appendChild(
+      explanation
+    );
+
+
+    /*
+     * Metadata at bottom
+     */
+
+    const metadata =
+      document.createElement("div");
+
+    metadata.className =
+      "metadata";
+
+
+    addMetadataTag(
+      metadata,
+      record["Question Type"]
+    );
+
+    addMetadataTag(
+      metadata,
+      record.Difficulty
+    );
+
+    addMetadataTag(
+      metadata,
+      record.Source
+    );
+
+
+    card.appendChild(questionArea);
+
+    card.appendChild(metadata);
+
+
+    /*
+     * Next button
+     */
+
+    const nextRow =
+      document.createElement("div");
+
+    nextRow.className =
+      "next-row hidden";
+
+
+    const nextButton =
+      document.createElement("button");
+
+    nextButton.type = "button";
+
+    nextButton.className =
+      "primary-button";
+
+    nextButton.textContent =
+      state.currentIndex ===
+      state.roundQuestions.length - 1
+        ? "Finish Round"
+        : "Next Question";
+
+
+    nextButton.addEventListener(
+      "click",
+      () => {
+
+        state.currentIndex++;
+
+        showCurrentQuestion();
+
+      }
+    );
+
+
+    nextRow.appendChild(nextButton);
+
+    card.appendChild(nextRow);
+
+
+    $("cardContainer").replaceChildren(card);
+
+
+    updateProgress();
+
+
+    /*
+     * Tell Apps Script that this question
+     * has been served.
+     */
+
+    sendEvent({
+
+      action: "question_served",
+
+      roundId: state.roundId,
+
+      questionId: record.No,
+
+      difficulty: record.Difficulty,
+
+      source: record.Source,
+
+      questionType:
+        record["Question Type"]
+
+    });
+
+  }
+
+
+  /*
+   * ==========================================================
+   * ANSWER
+   * ==========================================================
+   */
+
+  function handleAnswer(
+    clickedButton,
+    selectedChoice,
+    record,
+    allChoices
+  ) {
+
+    const buttons =
+      $("cardContainer")
+        .querySelectorAll(".answer-button");
+
+
+    buttons.forEach(
+      button => button.disabled = true
+    );
+
+
+    const correct =
+      selectedChoice.correct;
+
+
+    if (correct) {
+
+      clickedButton.classList.add(
+        "correct"
+      );
+
+      state.score++;
+
+      $("score").textContent =
+        state.score;
+
+      $("cardContainer")
+        .querySelector(".answer-message")
+        .textContent =
+        "✓ Correct!";
+
+      $("cardContainer")
+        .querySelector(".answer-message")
+        .className =
+        "answer-message correct-message";
+
+    }
+
+    else {
+
+      clickedButton.classList.add(
+        "incorrect"
+      );
+
+
+      /*
+       * Highlight the correct answer.
+       */
+
+      buttons.forEach(button => {
+
+        if (
+          button.textContent ===
+          record.Answer
+        ) {
+
+          button.classList.add(
+            "correct"
+          );
+
+        }
+
+      });
+
+
+      $("cardContainer")
+        .querySelector(".answer-message")
+        .textContent =
+        "✕ Incorrect.";
+
+      $("cardContainer")
+        .querySelector(".answer-message")
+        .className =
+        "answer-message incorrect-message";
+
+    }
+
+
+    const explanation =
+      $("cardContainer")
+        .querySelector(".explanation");
+
+    explanation.classList.remove(
+      "hidden"
+    );
+
+
+    const nextRow =
+      $("cardContainer")
+        .querySelector(".next-row");
+
+    nextRow.classList.remove(
+      "hidden"
+    );
+
+
+    state.answers.push({
+
+      questionId: record.No,
+
+      question: record.Question,
+
+      selectedAnswer:
+        selectedChoice.text,
+
+      correctAnswer:
+        record.Answer,
+
+      correct: correct,
+
+      explanation:
+        record.Explanation,
+
+      difficulty:
+        record.Difficulty,
+
+      source:
+        record.Source,
+
+      questionType:
+        record["Question Type"],
+
+      feedback: null
+
+    });
+
+
+    /*
+     * Send answer to Google Sheets.
+     */
+
+    sendEvent({
+
+      action: "answer",
+
+      roundId: state.roundId,
+
+      questionId: record.No,
+
+      selectedAnswer:
+        selectedChoice.text,
+
+      correctAnswer:
+        record.Answer,
+
+      correct: correct,
+
+      difficulty:
+        record.Difficulty,
+
+      source:
+        record.Source,
+
+      questionType:
+        record["Question Type"]
+
+    });
+
+  }
+
+
+  /*
+   * ==========================================================
+   * COMPLETE ROUND
+   * ==========================================================
+   */
+
+  function completeRound() {
+
+    $("gameScreen").classList.add(
+      "hidden"
+    );
+
+    $("completionScreen").classList.remove(
+      "hidden"
+    );
+
+
+    $("completionScore").textContent =
+      state.score +
+      " / " +
+      state.roundQuestions.length;
+
+
+    buildReviewList();
+
+  }
+
+
+  /*
+   * ==========================================================
+   * REVIEW LIST
+   * ==========================================================
+   */
+
+  function buildReviewList() {
+
+    const list =
+      $("reviewList");
+
+
+    list.replaceChildren();
+
+
+    state.answers.forEach(
+      (answer, index) => {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "review-item";
+
+
+        const reviewButton =
+          document.createElement("button");
+
+        reviewButton.type = "button";
+
+        reviewButton.className =
+          "review-button";
+
+
+        const status =
+          document.createElement("span");
+
+        status.className =
+          "review-status " +
+          (answer.correct
+            ? "correct"
+            : "incorrect");
+
+        status.textContent =
+          answer.correct
+            ? "✓"
+            : "✕";
+
+
+        const questionText =
+          document.createElement("span");
+
+        questionText.className =
+          "review-question";
+
+        questionText.textContent =
+          answer.question;
+
+
+        reviewButton.appendChild(status);
+
+        reviewButton.appendChild(
+          questionText
+        );
+
+
+        const details =
+          document.createElement("div");
+
+        details.className =
+          "review-details";
+
+
+        const selected =
+          document.createElement("div");
+
+        selected.className =
+          "review-answer";
+
+        selected.innerHTML =
+          "<strong>Your answer:</strong> " +
+          escapeHTML(
+            answer.selectedAnswer
+          );
+
+
+        const correct =
+          document.createElement("div");
+
+        correct.className =
+          "review-answer";
+
+        correct.innerHTML =
+          "<strong>Correct answer:</strong> " +
+          "<span class='review-correct'>" +
+          escapeHTML(
+            answer.correctAnswer
+          ) +
+          "</span>";
+
+
+        const explanation =
+          document.createElement("div");
+
+        explanation.className =
+          "review-answer";
+
+        explanation.innerHTML =
+          "<strong>Explanation:</strong><br>" +
+          escapeHTML(
+            answer.explanation || ""
+          );
+
+
+        /*
+         * Metadata
+         */
+
+        const metadata =
+          document.createElement("div");
+
+        metadata.className =
+          "metadata";
+
+
+        addMetadataTag(
+          metadata,
+          answer.questionType
+        );
+
+        addMetadataTag(
+          metadata,
+          answer.difficulty
+        );
+
+        addMetadataTag(
+          metadata,
+          answer.source
+        );
+
+
+        /*
+         * Feedback
+         */
+
+        const feedback =
+          document.createElement("div");
+
+        feedback.className =
+          "review-feedback";
+
+
+        const feedbackLabel =
+          document.createElement("div");
+
+        feedbackLabel.className =
+          "feedback-label";
+
+        feedbackLabel.textContent =
+          "How was this question?";
+
+
+        const goodButton =
+          document.createElement("button");
+
+        goodButton.type = "button";
+
+        goodButton.className =
+          "feedback-button";
+
+        goodButton.textContent =
+          "👍 Good Question";
+
+
+        const badButton =
+          document.createElement("button");
+
+        badButton.type = "button";
+
+        badButton.className =
+          "feedback-button";
+
+        badButton.textContent =
+          "👎 Needs Improvement";
+
+
+        const feedbackStatus =
+          document.createElement("span");
+
+        feedbackStatus.className =
+          "feedback-status";
+
+
+        goodButton.addEventListener(
+          "click",
+          () => submitFeedback(
+            answer,
+            "good",
+            goodButton,
+            badButton,
+            feedbackStatus
+          )
+        );
+
+
+        badButton.addEventListener(
+          "click",
+          () => submitFeedback(
+            answer,
+            "bad",
+            goodButton,
+            badButton,
+            feedbackStatus
+          )
+        );
+
+
+        feedback.appendChild(
+          feedbackLabel
+        );
+
+        feedback.appendChild(
+          goodButton
+        );
+
+        feedback.appendChild(
+          badButton
+        );
+
+        feedback.appendChild(
+          feedbackStatus
+        );
+
+
+        details.appendChild(
+          selected
+        );
+
+        details.appendChild(
+          correct
+        );
+
+        details.appendChild(
+          explanation
+        );
+
+        details.appendChild(
+          metadata
+        );
+
+        details.appendChild(
+          feedback
+        );
+
+
+        reviewButton.addEventListener(
+          "click",
+          () => {
+
+            item.classList.toggle(
+              "open"
+            );
+
+          }
+        );
+
+
+        item.appendChild(
+          reviewButton
+        );
+
+        item.appendChild(
+          details
+        );
+
+
+        list.appendChild(item);
+
+      }
+    );
+
+  }
+
+
+  /*
+   * ==========================================================
+   * FEEDBACK
+   * ==========================================================
+   */
+
+  function submitFeedback(
+    answer,
+    feedback,
+    goodButton,
+    badButton,
+    statusElement
+  ) {
+
+    /*
+     * Prevent duplicate feedback.
+     */
+
+    if (answer.feedback) {
+
+      statusElement.textContent =
+        "Feedback already submitted.";
+
+      return;
+
+    }
+
+
+    answer.feedback = feedback;
+
+
+    if (feedback === "good") {
+
+      goodButton.classList.add(
+        "selected-good"
+      );
+
+      statusElement.textContent =
+        "Thank you!";
+
+    }
+
+    else {
+
+      badButton.classList.add(
+        "selected-bad"
+      );
+
+      statusElement.textContent =
+        "Thank you!";
+
+    }
+
+
+    goodButton.disabled = true;
+
+    badButton.disabled = true;
+
+
+    sendEvent({
+
+      action: "feedback",
+
+      roundId: state.roundId,
+
+      questionId: answer.questionId,
+
+      feedback: feedback,
+
+      difficulty: answer.difficulty,
+
+      source: answer.source,
+
+      questionType: answer.questionType
+
+    });
+
+  }
+
+
+  /*
+   * ==========================================================
+   * PROGRESS
+   * ==========================================================
+   */
+
+  function updateProgress() {
+
+    const total =
+      state.roundQuestions.length;
+
+
+    const current =
+      state.currentIndex + 1;
+
+
+    $("progressText").textContent =
+      "Question " +
+      Math.min(current, total) +
+      " / " +
+      total;
+
+
+    const percentage =
+      total
+        ? (current / total) * 100
+        : 0;
+
+
+    $("progressFill").style.width =
+      Math.min(percentage, 100) + "%";
+
+  }
+
+
+  /*
+   * ==========================================================
+   * RESTART
+   * ==========================================================
+   */
+
+  function confirmRestart() {
+
+    const confirmed =
+      window.confirm(
+        "Are you sure you want to restart? Your current round progress will be lost."
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    state.roundQuestions = [];
+
+    state.currentIndex = 0;
+
+    state.score = 0;
+
+    state.answers = [];
+
+    state.roundId = "";
+
+
+    $("gameScreen").classList.add(
+      "hidden"
+    );
+
+    $("completionScreen").classList.add(
+      "hidden"
+    );
+
+    $("setupScreen").classList.remove(
+      "hidden"
+    );
+
+
+    $("cardContainer").replaceChildren();
+
+  }
+
+
+  /*
+   * ==========================================================
+   * GOOGLE APPS SCRIPT
+   * ==========================================================
+   */
+
+  function sendEvent(data) {
+
+    /*
+     * The quiz does not wait for the server.
+     *
+     * This prevents a temporary Google Apps Script
+     * connection issue from stopping the game.
+     */
+
+    fetch(
+      APPS_SCRIPT_URL,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "text/plain;charset=utf-8"
+        },
+
+        body: JSON.stringify(data)
+
+      }
+    )
+    .then(response => {
+
+      if (!response.ok) {
+
+        console.warn(
+          "Apps Script request failed."
+        );
+
+      }
+
+    })
+    .catch(error => {
+
+      console.warn(
+        "Unable to send event to Google Sheets:",
+        error
+      );
+
+    });
+
+  }
+
+
+  /*
+   * ==========================================================
+   * ROUND ID
+   * ==========================================================
+   */
+
+  function generateRoundId() {
+
+    const now =
+      new Date();
+
+
+    const date =
+      now.getFullYear() +
+      String(
+        now.getMonth() + 1
+      ).padStart(2, "0") +
+      String(
+        now.getDate()
+      ).padStart(2, "0");
+
+
+    const random =
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
+
+
+    return "R-" + date + "-" + random;
+
+  }
+
+
+  /*
+   * ==========================================================
+   * SHUFFLE
+   * ==========================================================
+   */
+
+  function shuffleArray(array) {
+
+    const copy =
+      [...array];
+
+
+    for (
+      let i = copy.length - 1;
+      i > 0;
+      i--
+    ) {
+
+      const j =
+        Math.floor(
+          Math.random() * (i + 1)
+        );
+
+
+      [
+        copy[i],
+        copy[j]
+      ] = [
+        copy[j],
+        copy[i]
+      ];
+
+    }
+
+
+    return copy;
+
+  }
+
+
+  /*
+   * ==========================================================
+   * METADATA TAG
+   * ==========================================================
+   */
+
+  function addMetadataTag(
+    container,
+    value
+  ) {
+
+    if (!value) {
+      return;
+    }
+
+
+    const tag =
+      document.createElement("span");
+
+    tag.className =
+      "metadata-tag";
+
+    tag.textContent =
+      value;
+
+
+    container.appendChild(tag);
+
+  }
+
+
+  /*
+   * ==========================================================
+   * HTML ESCAPING
+   * ==========================================================
+   */
+
+  function escapeHTML(value) {
+
+    return String(value || "")
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
 </script>
+
 </body>
 </html>
